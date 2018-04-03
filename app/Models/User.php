@@ -2,6 +2,7 @@
 
 namespace Greenbook\Models;
 
+use Greenbook\Models\Status;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\Authorizable;
@@ -77,6 +78,11 @@ class User extends Model implements AuthenticatableContract,
         return $this->hasMany('Greenbook\Models\Status', 'user_id');
     }
 
+    public function likes()
+    {
+        return $this->hasMany('Greenbook\Models\Like', 'user_id');
+    }
+
     public function friendsOfMine()
     {
         return $this->belongsToMany('Greenbook\Models\User', 'friends', 'user_id', 
@@ -119,6 +125,12 @@ class User extends Model implements AuthenticatableContract,
         $this->friendOf()->attach($user->id);
     }
 
+    public function deleteFriend(User $user)
+    {
+        $this->friendOf()->detach($user->id);
+        $this->friendsOfMine()->detach($user->id);
+    }
+
     public function acceptFriendRequest(User $user)
     {
         $this->friendRequests()->where('id', $user->id)->first()->pivot->update([
@@ -129,5 +141,10 @@ class User extends Model implements AuthenticatableContract,
     public function isFriendsWith(User $user)
     {
         return (bool) $this->friends()->where('id', $user->id)->count();
+    }
+
+    public function hasLikedStatus(Status $status)
+    {
+        return (bool) $status->likes->where('user_id', $this->id)->count();
     }
 }
