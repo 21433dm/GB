@@ -26,4 +26,9 @@ class Status extends Model
     {
         return $this->hasMany('Greenbook\Models\Status', 'parent_id');
     }
+
+    public function likes()
+    {
+        return $this->morphMany('Greenbook\Models\Like', 'likeable');
+    }
 }

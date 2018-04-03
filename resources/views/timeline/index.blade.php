@@ -34,8 +34,10 @@
                             <p>{{ $status->body }}</p>
                             <ul class="list-inline">
                                 <li class="list-inline-item">{{ $status->created_at->diffForHumans() }}</li>
-                                <li class="list-inline-item"><a class="btn btn-outline-primary btn-sm" href="#">Like</a></li>
-                                <li class="list-inline-item">10 likes</li>
+                                @if ($status->user->id !== Auth::user()->id)
+                                    <li class="list-inline-item"><a href="{{ route('status.like', ['statusId' => $status->id]) }}">Like</a></li>
+                                @endif
+                                <li class="list-inline-item">{{ $status->likes->count() }} {{ str_plural('Like', $status->likes->count()) }}</li>
                             </ul>
 
                             @foreach ($status->replies as $reply)
@@ -48,8 +50,10 @@
                                         <p>{{ $reply->body }}</p>
                                         <ul class="list-inline">
                                             <li class="list-inline-item">{{ $reply->created_at->diffForHumans() }}</li>
-                                            <li class="list-inline-item"><a class="btn btn-outline-primary btn-sm" href="#">Like</a></li>
-                                            <li class="list-inline-item">4 likes</li>
+                                            @if ($reply->user->id !== Auth::user()->id)
+                                                <li class="list-inline-item"><a href="{{ route('status.like', ['statusId' => $reply->id]) }}">Like</a></li>
+                                            @endif
+                                            <li class="list-inline-item">{{ $reply->likes->count() }} {{ str_plural('Like', $reply->likes->count()) }}</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -62,8 +66,8 @@
                                         <span class="help-block">{{ $errors->first("reply-{$status->id}") }}</span>
                                     @endif
                                 </div>
-                                <input type="submit" value="Reply" class="btn btn-outline-primary btn-sm">
-                                <input type="hidden" name="_token" value="{{ Session::token() }}">
+                                    <input type="submit" value="Reply" class="btn btn-outline-primary btn-sm">
+                                    <input type="hidden" name="_token" value="{{ Session::token() }}">
                             </form>
                         </div>
                     </div>
